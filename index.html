@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>PokéInfo — информация о покемонах</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+
+            font-family: Arial, sans-serif;
+
+            background: linear-gradient(
+                135deg,
+                #ffe4ec,
+                #ffd1df,
+                #fbc5d8
+            );
+
+            color: #4a3040;
+        }
+
+
+        /* Основной контейнер */
+
+        .page {
+            min-height: 100vh;
+
+            display: flex;
+            flex-direction: column;
+        }
+
+
+        /* Верхняя часть */
+
+        .content {
+            flex: 1;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            padding: 40px 20px;
+        }
+
+
+        /* Левая панель */
+
+        .pokemon-list {
+            width: 220px;
+
+            margin-right: 25px;
+
+            padding: 25px;
+
+            background: rgba(255, 255, 255, 0.65);
+
+            border-radius: 20px;
+
+            box-shadow: 0 10px 30px rgba(150, 70, 100, 0.15);
+        }
+
+
+        .pokemon-list h2 {
+            margin-top: 0;
+
+            text-align: center;
+
+            font-size: 20px;
+        }
+
+
+        .pokemon-button {
+            width: 100%;
+
+            padding: 12px;
+
+            margin-top: 10px;
+
+            border: none;
+            border-radius: 12px;
+
+            background: #ffffff;
+
+            color: #563646;
+
+            font-size: 15px;
+
+            cursor: pointer;
+
+            transition: 0.2s;
+        }
+
+
+        .pokemon-button:hover {
+            background: #ffb6cc;
+
+            transform: translateX(5px);
+        }
+
+
+        /* Центральный блок */
+
+        .container {
+            width: 90%;
+            max-width: 600px;
+
+            padding: 40px;
+
+            text-align: center;
+
+            background: rgba(255, 255, 255, 0.75);
+
+            border-radius: 25px;
+
+            box-shadow:
+                0 20px 50px rgba(150, 70, 100, 0.2);
+        }
+
+
+        h1 {
+            margin-top: 0;
+            margin-bottom: 10px;
+
+            font-size: 38px;
+
+            color: #6b3049;
+        }
+
+
+        .subtitle {
+            margin-bottom: 30px;
+
+            color: #80566a;
+
+            font-size: 16px;
+        }
+
+
+        /* Поиск */
+
+        .search {
+            display: flex;
+
+            justify-content: center;
+
+            gap: 10px;
+
+            margin-bottom: 25px;
+        }
+
+
+        input {
+            width: 65%;
+
+            padding: 14px 18px;
+
+            border: 2px solid #f1aac2;
+
+            border-radius: 12px;
+
+            font-size: 16px;
+
+            outline: none;
+
+            background: white;
+        }
+
+
+        input:focus {
+            border-color: #dc7fa1;
+        }
+
+
+        button {
+            padding: 14px 22px;
+
+            border: none;
+
+            border-radius: 12px;
+
+            background: #e98baa;
+
+            color: white;
+
+            font-size: 16px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+
+            transition: 0.2s;
+        }
+
+
+        button:hover {
+            background: #d97196;
+
+            transform: scale(1.05);
+        }
+
+
+        /* Результат */
+
+        .result {
+            display: none;
+
+            margin-top: 25px;
+
+            padding: 25px;
+
+            background: rgba(255, 255, 255, 0.8);
+
+            border-radius: 20px;
+
+            text-align: left;
+        }
+
+
+        .result h2 {
+            text-align: center;
+
+            margin-top: 0;
+
+            margin-bottom: 20px;
+
+            font-size: 28px;
+
+            color: #6b3049;
+        }
+
+
+        .info {
+            display: flex;
+
+            justify-content: space-between;
+
+            padding: 12px 5px;
+
+            border-bottom: 1px solid #f0c4d2;
+        }
+
+
+        .info:last-child {
+            border-bottom: none;
+        }
+
+
+        .label {
+            font-weight: bold;
+
+            color: #a34e70;
+        }
+
+
+        .error {
+            color: #c53d5f;
+
+            font-weight: bold;
+
+            text-align: center;
+        }
+
+
+        .loading {
+            text-align: center;
+
+            color: #80566a;
+        }
+
+
+        /* Подвал */
+
+        footer {
+            padding: 18px;
+
+            text-align: center;
+
+            background: rgba(255, 255, 255, 0.45);
+
+            color: #70495b;
+
+            font-size: 14px;
+        }
+
+
+        /* Адаптация для телефона */
+
+        @media (max-width: 800px) {
+
+            .content {
+                flex-direction: column;
+            }
+
+            .pokemon-list {
+                width: 90%;
+
+                max-width: 600px;
+
+                margin-right: 0;
+
+                margin-bottom: 20px;
+            }
+
+            .pokemon-button {
+                display: inline-block;
+
+                width: auto;
+
+                margin: 5px;
+            }
+
+            .container {
+                width: 90%;
+            }
+        }
+
+
+        @media (max-width: 500px) {
+
+            .search {
+                flex-direction: column;
+            }
+
+            input {
+                width: 100%;
+            }
+
+            button {
+                width: 100%;
+            }
+
+            h1 {
+                font-size: 30px;
+            }
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="page">
+
+
+    <div class="content">
+
+
+        <!-- Список покемонов -->
+
+        <div class="pokemon-list">
+
+            <h2>🌸 Покемоны</h2>
+
+            <button
+                class="pokemon-button"
+                onclick="selectPokemon('pikachu')">
+                ⚡ Pikachu
+            </button>
+
+            <button
+                class="pokemon-button"
+                onclick="selectPokemon('bulbasaur')">
+                🌱 Bulbasaur
+            </button>
+
+            <button
+                class="pokemon-button"
+                onclick="selectPokemon('charmander')">
+                🔥 Charmander
+            </button>
+
+            <button
+                class="pokemon-button"
+                onclick="selectPokemon('squirtle')">
+                💧 Squirtle
+            </button>
+
+            <button
+                class="pokemon-button"
+                onclick="selectPokemon('eevee')">
+                🦊 Eevee
+            </button>
+
+        </div>
+
+
+        <!-- Основной блок -->
+
+        <div class="container">
+
+            <h1>⚡ PokéInfo</h1>
+
+            <div class="subtitle">
+                Информация о покемонах через PokéAPI
+            </div>
+
+
+            <div class="search">
+
+                <input
+                    type="text"
+                    id="pokemonInput"
+                    placeholder="Введите имя или ID..."
+                    onkeydown="if(event.key === 'Enter') findPokemon()"
+                >
+
+                <button onclick="findPokemon()">
+                    Найти
+                </button>
+
+            </div>
+
+
+            <div id="result" class="result"></div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Подвал -->
+
+    <footer>
+        Выполнил Харламов Тимофей
+    </footer>
+
+
+</div>
+
+
+
+<script>
+
+
+/* Выбор покемона из списка */
+
+function selectPokemon(name) {
+
+    document.getElementById("pokemonInput").value = name;
+
+    findPokemon();
+
+}
+
+
+/* Поиск покемона */
+
+async function findPokemon() {
+
+    const input = document
+        .getElementById("pokemonInput")
+        .value
+        .trim()
+        .toLowerCase();
+
+
+    const result = document.getElementById("result");
+
+
+    if (input === "") {
+
+        result.style.display = "block";
+
+        result.innerHTML =
+            "<div class='error'>Введите имя или ID покемона.</div>";
+
+        return;
+    }
+
+
+    result.style.display = "block";
+
+    result.innerHTML =
+        "<div class='loading'>🔎 Ищем покемона...</div>";
+
+
+    try {
+
+
+        /* Получаем информацию о покемоне */
+
+        const pokemonResponse = await fetch(
+            `https://pokeapi.co/api/v2/pokemon/${input}`
+        );
+
+
+        if (!pokemonResponse.ok) {
+
+            throw new Error("Покемон не найден");
+
+        }
+
+
+        const pokemon = await pokemonResponse.json();
+
+
+        /* Получаем информацию о виде */
+
+        const speciesResponse = await fetch(
+            `https://pokeapi.co/api/v2/pokemon-species/${pokemon.id}`
+        );
+
+
+        const species = await speciesResponse.json();
+
+
+        /* Получаем тип */
+
+        const types = pokemon.types
+            .map(item => item.type.name)
+            .join(", ");
+
+
+        /* Получаем среду обитания */
+
+        let habitat = "неизвестна";
+
+
+        if (species.habitat) {
+
+            habitat = species.habitat.name;
+
+        }
+
+
+        /* Вывод результата */
+
+        result.innerHTML = `
+
+            <h2>🔴 ${pokemon.name}</h2>
+
+            <div class="info">
+                <span class="label">ID:</span>
+                <span>${pokemon.id}</span>
+            </div>
+
+            <div class="info">
+                <span class="label">Тип:</span>
+                <span>${types}</span>
+            </div>
+
+            <div class="info">
+                <span class="label">Вес:</span>
+                <span>${pokemon.weight}</span>
+            </div>
+
+            <div class="info">
+                <span class="label">Рост:</span>
+                <span>${pokemon.height}</span>
+            </div>
+
+            <div class="info">
+                <span class="label">Среда обитания:</span>
+                <span>${habitat}</span>
+            </div>
+
+        `;
+
+
+    }
+
+
+    catch (error) {
+
+        result.innerHTML = `
+
+            <div class="error">
+
+                ❌ Покемон не найден.
+
+                <br><br>
+
+                Проверьте правильность имени или ID.
+
+            </div>
+
+        `;
+
+    }
+
+}
+
+</script>
+
+
+</body>
+
+</html>
