@@ -1,0 +1,930 @@
+```html
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Мир Pokémon</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #ffdff0;
+    color: #4a3040;
+}
+
+header {
+    text-align: center;
+    padding: 25px 10px;
+}
+
+header h1 {
+    margin: 0;
+    color: #d94f8a;
+    font-size: 38px;
+}
+
+header p {
+    margin: 8px 0 0;
+}
+
+.content {
+    width: 95%;
+    max-width: 1300px;
+    margin: auto;
+    display: grid;
+    grid-template-columns: 220px 1fr 300px;
+    gap: 20px;
+}
+
+.panel,
+.pokemon-card {
+    background: white;
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 8px 25px rgba(120, 50, 90, 0.15);
+}
+
+h2 {
+    text-align: center;
+    color: #d94f8a;
+    margin-top: 0;
+}
+
+/* Список */
+
+.pokemon-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.pokemon-button {
+    border: none;
+    background: #ffe8f3;
+    border-radius: 12px;
+    padding: 12px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.pokemon-button:hover {
+    background: #ffd0e6;
+}
+
+.pokemon-button.active {
+    background: #f49ac3;
+    color: white;
+    font-weight: bold;
+}
+
+/* Центральная часть */
+
+.pokemon-card {
+    text-align: center;
+}
+
+#pokemonImage {
+    width: 230px;
+    height: 230px;
+    object-fit: contain;
+    image-rendering: pixelated;
+}
+
+#pokemonName {
+    color: #d94f8a;
+    font-size: 32px;
+}
+
+.info {
+    max-width: 500px;
+    margin: 20px auto;
+    text-align: left;
+}
+
+.info-row {
+    background: #fff0f7;
+    padding: 12px;
+    margin: 8px 0;
+    border-radius: 10px;
+}
+
+.random-button {
+    border: none;
+    background: #e85c98;
+    color: white;
+    padding: 13px 25px;
+    border-radius: 12px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+/* Правая колонка */
+
+.right-column {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Покебол */
+
+.pokeball-box {
+    text-align: center;
+}
+
+.pokeball {
+    width: 100px;
+    height: 100px;
+    margin: 15px auto;
+    border-radius: 50%;
+    border: 5px solid #333;
+    background: linear-gradient(
+        to bottom,
+        #ef4d62 0%,
+        #ef4d62 46%,
+        #222 46%,
+        #222 54%,
+        white 54%,
+        white 100%
+    );
+    position: relative;
+    cursor: pointer;
+}
+
+.pokeball::after {
+    content: "";
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    background: white;
+    border: 5px solid #333;
+    border-radius: 50%;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.pokeball.throw {
+    animation: throwBall 0.7s;
+}
+
+@keyframes throwBall {
+    0% {
+        transform: translateX(0) rotate(0);
+    }
+
+    50% {
+        transform: translateX(100px) rotate(180deg);
+    }
+
+    100% {
+        transform: translateX(0) rotate(360deg);
+    }
+}
+
+#catchMessage {
+    min-height: 40px;
+    font-weight: bold;
+}
+
+/* Битва */
+
+.battle {
+    text-align: center;
+}
+
+.fighter {
+    background: #fff0f7;
+    border-radius: 14px;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.fighter img {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+    image-rendering: pixelated;
+}
+
+.fighter-name {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.hp-text {
+    font-size: 13px;
+    margin: 5px;
+}
+
+.hp-container {
+    height: 15px;
+    background: #ddd;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.hp {
+    height: 100%;
+    width: 100%;
+    background: #55bd67;
+    transition: width 0.4s;
+}
+
+.fight-button {
+    width: 100%;
+    border: none;
+    background: #8b63d2;
+    color: white;
+    padding: 13px;
+    border-radius: 10px;
+    font-size: 17px;
+    cursor: pointer;
+}
+
+.fight-button:hover {
+    background: #7348c0;
+}
+
+.fight-button:disabled {
+    background: #aaa;
+    cursor: not-allowed;
+}
+
+#battleMessage {
+    min-height: 50px;
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+footer {
+    text-align: center;
+    padding: 30px;
+    color: #79566a;
+}
+
+/* Адаптация */
+
+@media (max-width: 900px) {
+
+    .content {
+        grid-template-columns: 1fr;
+    }
+
+    .pokemon-list {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .right-column {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 600px) {
+
+    header h1 {
+        font-size: 30px;
+    }
+
+    .pokemon-list {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .right-column {
+        grid-template-columns: 1fr;
+    }
+
+    #pokemonImage {
+        width: 190px;
+        height: 190px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>🌸 Мир Pokémon 🌸</h1>
+    <p>Выбери своего Pokémon и отправляйся в приключение!</p>
+</header>
+
+<main class="content">
+
+<!-- СПИСОК -->
+
+<section class="panel">
+
+<h2>Pokémon</h2>
+
+<div class="pokemon-list">
+
+<button class="pokemon-button active" onclick="selectPokemon(0)">
+⚡ Пикачу
+</button>
+
+<button class="pokemon-button" onclick="selectPokemon(1)">
+🌱 Бульбазавр
+</button>
+
+<button class="pokemon-button" onclick="selectPokemon(2)">
+🔥 Чармандер
+</button>
+
+<button class="pokemon-button" onclick="selectPokemon(3)">
+💧 Сквиртл
+</button>
+
+<button class="pokemon-button" onclick="selectPokemon(4)">
+👻 Генгар
+</button>
+
+<button class="pokemon-button" onclick="selectPokemon(5)">
+🦊 Иви
+</button>
+
+</div>
+
+</section>
+
+
+<!-- POKEMON -->
+
+<section class="pokemon-card">
+
+<img id="pokemonImage"
+src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/25.png">
+
+<h2 id="pokemonName">Пикачу</h2>
+
+<div class="info">
+
+<div class="info-row">
+<strong>Номер:</strong>
+<span id="pokemonId">#025</span>
+</div>
+
+<div class="info-row">
+<strong>Тип:</strong>
+<span id="pokemonType">Электрический</span>
+</div>
+
+<div class="info-row">
+<strong>Среда обитания:</strong>
+<span id="pokemonHabitat">Леса и города</span>
+</div>
+
+<div class="info-row">
+<strong>Рост:</strong>
+<span id="pokemonHeight">0.4 м</span>
+</div>
+
+</div>
+
+<button class="random-button" onclick="randomPokemon()">
+🎲 Случайный Pokémon
+</button>
+
+</section>
+
+
+<!-- ПРАВАЯ КОЛОНКА -->
+
+<section class="right-column">
+
+<!-- POKEBALL -->
+
+<div class="panel pokeball-box">
+
+<h2>🔴 Pokéball</h2>
+
+<div
+class="pokeball"
+id="pokeball"
+onclick="throwPokeball()">
+</div>
+
+<div id="catchMessage">
+Нажми на Pokéball!
+</div>
+
+</div>
+
+
+<!-- БИТВА -->
+
+<div class="panel battle">
+
+<h2>⚔️ Мини-битва</h2>
+
+
+<!-- ИГРОК -->
+
+<div class="fighter">
+
+<img id="playerImage">
+
+<div
+class="fighter-name"
+id="playerName">
+Пикачу
+</div>
+
+<div
+class="hp-text"
+id="playerHpText">
+HP: 100 / 100
+</div>
+
+<div class="hp-container">
+<div
+class="hp"
+id="playerHp">
+</div>
+</div>
+
+</div>
+
+
+<div style="font-weight:bold; margin:8px;">
+VS
+</div>
+
+
+<!-- ПРОТИВНИК -->
+
+<div class="fighter">
+
+<img id="enemyImage">
+
+<div
+class="fighter-name"
+id="enemyName">
+Чармандер
+</div>
+
+<div
+class="hp-text"
+id="enemyHpText">
+HP: 100 / 100
+</div>
+
+<div class="hp-container">
+<div
+class="hp"
+id="enemyHp">
+</div>
+</div>
+
+</div>
+
+
+<button
+class="fight-button"
+id="fightButton"
+onclick="fight()">
+
+⚔️ Атаковать
+
+</button>
+
+<div id="battleMessage">
+Бой начинается!
+</div>
+
+</div>
+
+</section>
+
+</main>
+
+
+<footer>
+Выполнил Харламов Тимофей
+</footer>
+
+
+<script>
+
+const pokemons = [
+
+{
+name: "Пикачу",
+id: 25,
+type: "Электрический",
+habitat: "Леса и города",
+height: "0.4 м"
+},
+
+{
+name: "Бульбазавр",
+id: 1,
+type: "Трава / Яд",
+habitat: "Луга и леса",
+height: "0.7 м"
+},
+
+{
+name: "Чармандер",
+id: 4,
+type: "Огонь",
+habitat: "Горы и вулканические районы",
+height: "0.6 м"
+},
+
+{
+name: "Сквиртл",
+id: 7,
+type: "Вода",
+habitat: "Озёра и реки",
+height: "0.5 м"
+},
+
+{
+name: "Генгар",
+id: 94,
+type: "Призрак / Яд",
+habitat: "Тёмные места и пещеры",
+height: "1.5 м"
+},
+
+{
+name: "Иви",
+id: 133,
+type: "Обычный",
+habitat: "Леса и города",
+height: "0.3 м"
+}
+
+];
+
+
+let currentPokemon = 0;
+let enemyPokemon = 2;
+
+let playerHP = 100;
+let enemyHP = 100;
+
+
+/* КАРТИНКА */
+
+function getImage(id) {
+
+return "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/" + id + ".png";
+
+}
+
+
+/* ВЫБОР POKEMON */
+
+function selectPokemon(index) {
+
+currentPokemon = index;
+
+let pokemon = pokemons[index];
+
+document.getElementById("pokemonImage").src =
+getImage(pokemon.id);
+
+document.getElementById("pokemonName").textContent =
+pokemon.name;
+
+document.getElementById("pokemonId").textContent =
+"#" + String(pokemon.id).padStart(3, "0");
+
+document.getElementById("pokemonType").textContent =
+pokemon.type;
+
+document.getElementById("pokemonHabitat").textContent =
+pokemon.habitat;
+
+document.getElementById("pokemonHeight").textContent =
+pokemon.height;
+
+
+/* Кнопки */
+
+let buttons =
+document.querySelectorAll(".pokemon-button");
+
+buttons.forEach(function(button) {
+
+button.classList.remove("active");
+
+});
+
+buttons[index].classList.add("active");
+
+
+/* Новый бой */
+
+startBattle();
+
+}
+
+
+/* СЛУЧАЙНЫЙ POKEMON */
+
+function randomPokemon() {
+
+let index;
+
+do {
+
+index =
+Math.floor(Math.random() * pokemons.length);
+
+} while (index === currentPokemon);
+
+selectPokemon(index);
+
+}
+
+
+/* НОВЫЙ БОЙ */
+
+function startBattle() {
+
+do {
+
+enemyPokemon =
+Math.floor(Math.random() * pokemons.length);
+
+} while (enemyPokemon === currentPokemon);
+
+
+playerHP = 100;
+enemyHP = 100;
+
+
+let player =
+pokemons[currentPokemon];
+
+let enemy =
+pokemons[enemyPokemon];
+
+
+document.getElementById("playerImage").src =
+getImage(player.id);
+
+document.getElementById("playerName").textContent =
+player.name;
+
+
+document.getElementById("enemyImage").src =
+getImage(enemy.id);
+
+document.getElementById("enemyName").textContent =
+enemy.name;
+
+
+document.getElementById("fightButton").disabled =
+false;
+
+updateHP();
+
+document.getElementById("battleMessage").textContent =
+player.name + " против " + enemy.name + "!";
+
+}
+
+
+/* HP */
+
+function updateHP() {
+
+document.getElementById("playerHp").style.width =
+playerHP + "%";
+
+document.getElementById("enemyHp").style.width =
+enemyHP + "%";
+
+document.getElementById("playerHpText").textContent =
+"HP: " + playerHP + " / 100";
+
+document.getElementById("enemyHpText").textContent =
+"HP: " + enemyHP + " / 100";
+
+}
+
+
+/* ==========================
+   ГЛАВНАЯ ФУНКЦИЯ БОЯ
+========================== */
+
+function fight() {
+
+if (playerHP <= 0 || enemyHP <= 0) {
+return;
+}
+
+
+let player =
+pokemons[currentPokemon];
+
+let enemy =
+pokemons[enemyPokemon];
+
+
+/* Кто ходит первым — полностью случайно */
+
+let playerFirst =
+Math.random() < 0.5;
+
+
+/* Урон */
+
+let firstDamage =
+Math.floor(Math.random() * 20) + 10;
+
+let secondDamage =
+Math.floor(Math.random() * 20) + 10;
+
+
+if (playerFirst) {
+
+/* Игрок атакует */
+
+enemyHP -= firstDamage;
+
+if (enemyHP < 0) {
+enemyHP = 0;
+}
+
+updateHP();
+
+
+if (enemyHP === 0) {
+
+document.getElementById("battleMessage").textContent =
+"🎉 " + player.name +
+" победил " + enemy.name + "!";
+
+document.getElementById("fightButton").disabled = true;
+
+return;
+}
+
+
+/* Ответ врага */
+
+playerHP -= secondDamage;
+
+if (playerHP < 0) {
+playerHP = 0;
+}
+
+updateHP();
+
+
+if (playerHP === 0) {
+
+document.getElementById("battleMessage").textContent =
+"💥 " + enemy.name +
+" победил " + player.name + "!";
+
+document.getElementById("fightButton").disabled = true;
+
+return;
+}
+
+
+document.getElementById("battleMessage").textContent =
+"⚡ " + player.name +
+" атакует первым: -" +
+firstDamage +
+" HP. " +
+enemy.name +
+" отвечает: -" +
+secondDamage +
+" HP.";
+
+}
+
+
+else {
+
+/* Враг атакует */
+
+playerHP -= firstDamage;
+
+if (playerHP < 0) {
+playerHP = 0;
+}
+
+updateHP();
+
+
+if (playerHP === 0) {
+
+document.getElementById("battleMessage").textContent =
+"💥 " + enemy.name +
+" победил " + player.name + "!";
+
+document.getElementById("fightButton").disabled = true;
+
+return;
+}
+
+
+/* Ответ игрока */
+
+enemyHP -= secondDamage;
+
+if (enemyHP < 0) {
+enemyHP = 0;
+}
+
+updateHP();
+
+
+if (enemyHP === 0) {
+
+document.getElementById("battleMessage").textContent =
+"🎉 " + player.name +
+" победил " + enemy.name + "!";
+
+document.getElementById("fightButton").disabled = true;
+
+return;
+}
+
+
+document.getElementById("battleMessage").textContent =
+"💥 " + enemy.name +
+" атакует первым: -" +
+firstDamage +
+" HP. " +
+player.name +
+" отвечает: -" +
+secondDamage +
+" HP.";
+
+}
+
+}
+
+
+/* POKEBALL */
+
+function throwPokeball() {
+
+let ball =
+document.getElementById("pokeball");
+
+let message =
+document.getElementById("catchMessage");
+
+
+ball.classList.remove("throw");
+
+void ball.offsetWidth;
+
+ball.classList.add("throw");
+
+
+setTimeout(function() {
+
+let pokemon =
+pokemons[currentPokemon];
+
+let success =
+Math.random() < 0.5;
+
+
+if (success) {
+
+message.textContent =
+"✨ " + pokemon.name +
+" пойман!";
+
+} else {
+
+message.textContent =
+"💨 " + pokemon.name +
+" вырвался!";
+
+}
+
+}, 700);
+
+}
+
+
+/* ЗАПУСК */
+
+selectPokemon(0);
+
+</script>
+
+</body>
+</html>
+```
